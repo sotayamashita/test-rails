@@ -39,7 +39,7 @@ volumes:
     driver: local
   redis-data:
     driver: local
-  bundle_install:
+  bundle_cache:
     driver: local
   bundle:
     driver: local
