@@ -16,16 +16,14 @@ install_gems() {
 
 if [[ "$1" == "bundle" ]] && [[ "$2" == "exec" ]] && [[ "$3" == "rails" ]] && [[ "$4" == "server" ]]; then
   if [[ -f /app/config.ru ]]; then
-    log "nothing special" 
+    log "nothing special"
   else
-    # Install a rails gem
-    install_gems
     # Create a rails application
-    bundle exec rails new . --force --skip-bundle --skip-test --skip-yarn --skip-coffee --database=postgresql
+    rails new . --force --skip-bundle --skip-test --skip-yarn --skip-coffee --database=postgresql
     # Install other gems which are based on rails generates
     install_gems
     # Update default encoding to utf8
-    sed -i -e '1,/default:/ s/encoding:.*$/encoding: utf8/g' /app/config/database.yml    
+    sed -i -e '1,/default:/ s/encoding:.*$/encoding: utf8/g' /app/config/database.yml
   fi
 
   # Verify if dependencies are satisfied. If it are not, it starts to install them.
