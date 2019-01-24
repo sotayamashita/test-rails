@@ -11,7 +11,7 @@ is_gems_updated() {
 }
 
 install_gems() {
-  bundle install -j "$(getconf _NPROCESSORS_ONLN)" --retry 5　--quiet --path vendor/bundle
+  bundle install -j "$(getconf _NPROCESSORS_ONLN)" --quiet --path vendor/bundle --retry 5
 }
 
 if [[ "$1" == "bundle" ]] && [[ "$2" == "exec" ]] && [[ "$3" == "rails" ]] && [[ "$4" == "server" ]]; then
