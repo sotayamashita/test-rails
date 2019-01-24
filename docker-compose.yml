@@ -1,0 +1,28 @@
+version: "3"
+services:
+  db:
+    image: postgres
+
+  redis:
+    image: redis
+    volumes:
+    - "redis:/data"
+
+  web:
+    build: .
+    # Enable sending signals (CTRL+C, CTRL+P + CTRL+Q) into the container:
+    tty: true
+    # Keep the stdin open, so we can attach to our app container's process and do things such as byebug, etc:
+    stdin_open: true
+    # image: sota0805/create-rails-app
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  redis:
+  bundle_cache:
