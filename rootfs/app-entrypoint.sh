@@ -6,30 +6,35 @@ set -o pipefail
 # Load libraries
 . /opt/create-rails-app/base/functions
 
-is_gems_updated() {
+bundle_check() {
   bundle check 1> /dev/null
 }
 
-install_gems() {
-  bundle install -j "$(getconf _NPROCESSORS_ONLN)" --quiet --path vendor/bundle --retry 5
+bundle_install() {
+  bundle install -j "$(getconf _NPROCESSORS_ONLN)" --quiet --retry 5
+}
+
+bunlde_install_if_need() {
+  if ! bundle_check; then
+    bundle_install
+  fi
 }
 
 if [[ "$1" == "bundle" ]] && [[ "$2" == "exec" ]] && [[ "$3" == "rails" ]] && [[ "$4" == "server" ]]; then
-  if [[ -f /app/config.ru ]]; then
-    log "nothing special"
-  else
+  if [[ ! -f /app/config.ru ]]; then
     # Create a rails application
     rails new . --force --skip-bundle --skip-test --skip-yarn --skip-coffee --database=postgresql
-    # Install other gems which are based on rails generates
-    install_gems
-    # Update default encoding to utf8
+
+    # Setup database configuration
     sed -i -e '1,/default:/ s/encoding:.*$/encoding: utf8/g' /app/config/database.yml
+    sed -i -e '1,/default:/ s/encoding: utf8/& \n\ \ host:\ db\n\ \ username:\ postgres\n\ \ password:/g' /app/config/database.yml
+
+    # Fire 🚀
+    bundle_install
+    rake db:setup
   fi
 
-  # Verify if dependencies are satisfied. If it are not, it starts to install them.
-  if ! is_gems_updated; then
-    install_gems
-  fi
+  bunlde_install_if_need
 fi
 
 exec tini -- "$@"
