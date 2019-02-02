@@ -21,7 +21,6 @@ services:
       - 3000:3000
     depends_on:
       - db
-      - redis
     volumes:
       - .:/app
       - bundle_cache:/usr/local/bundle
