@@ -7,13 +7,6 @@ services:
     volumes:
       - psql-data:/var/lib/postgresql/data
 
-  redis:
-    image: redis
-    networks:
-      - default
-    volumes:
-      - redis-data:/data
-
   web:
     build:
       context: .
@@ -28,18 +21,9 @@ services:
       - 3000:3000
     depends_on:
       - db
-      - redis
     volumes:
       - .:/app
-      - bundle_cache:/app/vendor/bundle
-      - bundle:/app/.bundle
 
 volumes:
   psql-data:
-    driver: local
-  redis-data:
-    driver: local
-  bundle_cache:
-    driver: local
-  bundle:
     driver: local
