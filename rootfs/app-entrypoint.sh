@@ -11,7 +11,7 @@ bundle_check() {
 }
 
 bundle_install() {
-  bundle install -j "$(getconf _NPROCESSORS_ONLN)" --quiet --retry 5
+  bundle install -j "$(getconf _NPROCESSORS_ONLN)" --retry 5
 }
 
 bunlde_install_if_need() {
@@ -21,17 +21,19 @@ bunlde_install_if_need() {
 }
 
 if [[ "$1" == "bundle" ]] && [[ "$2" == "exec" ]] && [[ "$3" == "rails" ]] && [[ "$4" == "server" ]]; then
-  if [[ ! -f /app/config.ru ]]; then
+  if [[ -f /app/config.ru ]]; then
+    log "Rails project found. Skipping creation..."
+  else
     # Create a rails application
+    log "Creating new Ruby on Rails project..."
     rails new . --force --skip-bundle --skip-test --skip-yarn --skip-coffee --database=postgresql
 
-    # Setup database configuration
-    sed -i -e '1,/default:/ s/encoding:.*$/encoding: utf8/g' /app/config/database.yml
-    sed -i -e '1,/default:/ s/encoding: utf8/& \n\ \ host:\ db\n\ \ username:\ postgres\n\ \ password:/g' /app/config/database.yml
+    log "Configuring database.yml..."
+    sed -i -e '1,/default:\  &default/ s/encoding:.*$/encoding:\ utf8/g' /app/config/database.yml
+    sed -i -e '1,/default:\  &default/ s/encoding:.*/& \n\ \ host:\ db\n\ \ username:\ postgres\n\ \ password:/g' /app/config/database.yml
 
-    # Fire 🚀
+    log "Installing dependencies..."
     bundle_install
-    rake db:setup
   fi
 
   bunlde_install_if_need
