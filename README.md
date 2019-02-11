@@ -1,46 +1,24 @@
-```
-docker-compose run web rails new . --force --skip-bundle --skip-yarn --skip-coffee --no-deps --database=postgresql
-docker-compose build
-```
+# README
 
+This README would normally document whatever steps are necessary to get the
+application up and running.
 
-# create-rails-app
+Things you may want to cover:
 
-## Execute commands in services
+* Ruby version
 
-The general structure of the `exec` command is:
+* System dependencies
 
-```bash
-$ docker-compose exec <service> <command>
-```
+* Configuration
 
-`<service>` is the name of the container service as described in the `docker-compose.yml` file and `<command>` is the command you want to launch inside the service.
+* Database creation
 
-## Run with other services
+* Database initialization
 
-### Sidekiq
+* How to run the test suite
 
-```yaml
-version: '3'
-services:
-  ...
-  redis:
-    image: redis
+* Services (job queues, cache servers, search engines, etc.)
 
-  worker:
-    build: .
-    command: bundle exec sidekiq -C config/sidekiq.yml -e development
-    depends_on:
-      - redis
-```
+* Deployment instructions
 
-## References
-
-- [Best practices for writing Dockerfiles](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
-- [Docker development best practices](https://docs.docker.com/develop/dev-best-practices/)
-- [ShellCheck](https://www.shellcheck.net/)
-
-## License
-
-Create Rails App © Sam Yamashita. Released under the [MIT](LICENSE)<br/>
-Authored and maintained by Sam Yamashita with help from [contributors](https://github.com/sotayamashita/create-rails-app/contributors).
+* ...
