@@ -2,25 +2,13 @@ FROM ruby:2.5
 
 ENV LANG C.UTF-8
 ENV APP_ROOT /app
-ENV RAILS_VERSION 5.2.1
 
-# For essential
 RUN curl -sSL https://deb.nodesource.com/setup_10.x | bash && \
-    apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    gcc \
-    g++ \
-    make \
-    nodejs \
-    vim \
-    wget \
- && rm -rf /var/lib/apt/lists/*
+    apt-get update -qq && apt-get install -y nodejs postgresql-client vim
 
 # For tini
 ENV TINI_VERSION v0.18.0
 ENV TINI_GPG_KEY 595E85A6B1B4779EA4DAAEC70B588DFF0527A9B7
-
 RUN cd /tmp && \
   curl -sSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini.asc -o tini.asc && \
   curl -sSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini -o /usr/local/bin/tini && \
@@ -30,11 +18,15 @@ RUN cd /tmp && \
   rm tini.asc
 
 RUN mkdir -p ${APP_ROOT}
-RUN gem install rails --version=${RAILS_VERSION}
-
-COPY rootfs /
-
 WORKDIR ${APP_ROOT}
+
+COPY Gemfile* ${APP_ROOT}/
+RUN bundle install -j "$(getconf _NPROCESSORS_ONLN)" --retry 5
+
+# Add a script to be executed every time the container starts.
+COPY rootfs /
+ENTRYPOINT [ "/entrypoint-dev.sh" ]
 EXPOSE 3000
-ENTRYPOINT [ "/app-entrypoint.sh" ]
-CMD [ "bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "3000" ]
+
+# Start the main process.
+CMD ["rails", "server", "-b", "0.0.0.0"]

@@ -1,3 +1,8 @@
+```
+docker-compose run web rails new . --force --no-deps --database=postgresql
+```
+
+
 # create-rails-app
 
 ## Execute commands in services

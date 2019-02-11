@@ -2,10 +2,8 @@ version: '3'
 services:
   db:
     image: postgres
-    networks:
-      - default
     volumes:
-      - psql-data:/var/lib/postgresql/data
+      - ./tmp/db:/var/lib/postgresql/data
 
   web:
     build:
@@ -15,15 +13,17 @@ services:
     tty: true
     # Keep the stdin open, so we can attach to our app container's process and do things such as byebug, etc:
     stdin_open: true
-    networks:
-      - default
+    command:
+      - /bin/sh
+      - -c
+      - |
+        if [ -f tmp/pids/server.pid ]; then
+          rm -f tmp/pids/server.pid
+        fi
+        bundle exec rails s -p 3000 -b 0.0.0.0
+    volumes:
+      - .:/app
     ports:
       - 3000:3000
     depends_on:
       - db
-    volumes:
-      - .:/app
-
-volumes:
-  psql-data:
-    driver: local

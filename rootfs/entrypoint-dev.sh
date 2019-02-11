@@ -1,7 +1,5 @@
 #!/bin/bash
-
-set -o errexit
-set -o pipefail
+set -eu
 
 # Load libraries
 . /opt/create-rails-app/base/functions
