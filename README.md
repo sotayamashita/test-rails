@@ -1,5 +1,5 @@
 ```
-docker-compose run web rails new . --force --no-deps --database=postgresql
+docker-compose run web rails new . --force --skip-bundle --skip-yarn --skip-coffee --no-deps --database=postgresql
 ```
 
 
